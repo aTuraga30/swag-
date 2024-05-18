@@ -1,0 +1,46 @@
+import speech_recognition as sr
+import openai
+
+# Initialize recognizer class (for recognizing the speech)
+recognizer = sr.Recognizer()
+
+def recognize_speech_from_mic():
+    # Reading Microphone as source
+    # Listening the speech and store in audio_text variable
+    with sr.Microphone() as source:
+        print("Talk now...")
+        audio_text = recognizer.listen(source)
+        print("Time's up, thanks!")
+
+        try:
+            # Using google speech recognition
+            text = recognizer.recognize_google(audio_text)
+            print(f"Text: {text}")
+            return text
+        except sr.UnknownValueError:
+            print("Sorry, I did not get that")
+            return None
+        except sr.RequestError:
+            print("Sorry, my speech service is down")
+            return None
+
+# Set up OpenAI API key
+openai.api_key = 'org-3tzZ3wiVjpKP8PsPXgB5UqZv'
+
+def get_gpt4_response(prompt):
+    response = openai.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response['choices'][0]['message']['content'].strip()
+
+# Get text from speech
+speech_text = recognize_speech_from_mic()
+
+# Process the text using GPT-4
+if speech_text:
+    gpt4_response = get_gpt4_response(speech_text)
+    print(f"GPT-4 Response: {gpt4_response}")
