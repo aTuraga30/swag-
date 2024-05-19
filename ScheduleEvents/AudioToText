@@ -25,7 +25,7 @@ def recognize_speech_from_mic():
             return None
 
 # Set up OpenAI API key
-openai.api_key = 'org-3tzZ3wiVjpKP8PsPXgB5UqZv'
+openai.api_key = 'your-openai-api-key'
 
 def get_gpt4_response(prompt):
     response = openai.chat.completions.create(
