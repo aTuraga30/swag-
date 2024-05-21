@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visitor Check-In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Visitor Check-In</h1>
+    <form id="check-in-form">
+        <label for="visitor-name">Name:</label>
+        <input type="text" id="visitor-name" name="visitor-name" required>
+        <label for="visitor-purpose">Purpose:</label>
+        <input type="text" id="visitor-purpose" name="visitor-purpose" required>
+        <button type="submit">Check In</button>
+    </form>
+    <div id="response"></div>
+    <script>
+        document.getElementById('check-in-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('visitor-name').value;
+            const purpose = document.getElementById('visitor-purpose').value;
+            const response = await fetch('/check-in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, purpose })
+            });
+            const result = await response.json();
+            document.getElementById('response').innerText = result.message;
+        });
+    </script>
+</body>
+</html>
