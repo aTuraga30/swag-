@@ -1,0 +1,70 @@
+import datetime
+import os.path
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import openai
+
+# Set up OpenAI API key
+openai.api_key = 'your-openai-api-key'
+
+# Set up Google Calendar API
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+SERVICE_ACCOUNT_FILE = 'path/to/credentials.json'
+
+credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = build('calendar', 'v3', credentials=credentials)
+
+# Function to fetch events from the calendar
+def get_calendar_events():
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    print('Getting the upcoming 10 events')
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                          maxResults=10, singleEvents=True,
+                                          orderBy='startTime').execute()
+    events = events_result.get('items', [])
+
+    if not events:
+        print('No upcoming events found.')
+        return []
+
+    return events
+
+# Function to create a new event in the calendar
+def create_calendar_event(start_time, end_time, summary):
+    event = {
+        'summary': summary,
+        'start': {
+            'dateTime': start_time,
+            'timeZone': 'UTC',
+        },
+        'end': {
+            'dateTime': end_time,
+            'timeZone': 'UTC',
+        },
+    }
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print('Event created: %s' % (event.get('htmlLink')))
+
+# Function to interact with the client using GPT-4
+def interact_with_client(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a virtual receptionist."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response['choices'][0]['message']['content'].strip()
+
+# Example interaction
+client_prompt = "I'd like to schedule a meeting for tomorrow at 3 PM."
+response = interact_with_client(client_prompt)
+print(f"GPT-4 Response: {response}")
+
+# Check availability and schedule the meeting
+events = get_calendar_events()
+# Check for availability logic here...
+# For simplicity, assume the time is available
+create_calendar_event('2023-05-18T15:00:00Z', '2023-05-18T16:00:00Z', 'Client Meeting')
+
