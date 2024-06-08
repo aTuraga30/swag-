@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule an Appointment</title>
+</head>
+<body>
+    <h1>Schedule an Appointment</h1>
+    <form action="/schedule" method="post">
+        <label for="details">Enter Details:</label>
+        <textarea id="details" name="details" required></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    {% if message %}
+        <h2>Response:</h2>
+        <p>{{ message }}</p>
+    {% endif %}
+</body>
+</html>
