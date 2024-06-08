@@ -1,3 +1,7 @@
+/*
+This is the main file that runs the app to run.
+*/
+
 // Imports the express module, which is a web development framework within nodejs
 const express = require("express");
 
@@ -14,10 +18,14 @@ app.use(
     extended: true,
   })
 );
+
+// It's in this route that allows the "services/users" functions to run. This also depends 
+// on the CRUD functions.
 app.use("/users", usersRouter);
 
+// This is the main page. Simply returns an "ok" message.
 app.get("/", (req, res) => {
-  res.json({ message: "ok" });
+  res.json({ message: "You have reached the API. Go to /users to see the CRUD functions." });
 });
 
 /* Error handler middleware */
